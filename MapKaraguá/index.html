@@ -1,0 +1,187 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Karaguá Vivo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; font-family: "Rubik", sans-serif; }
+    #map { height: 100vh; width: 100%; font-family: "Rubik", sans-serif; }
+    .legend {
+      font-family: "Rubik", sans-serif;
+      background: white;
+      padding: 4px;
+      font-size: 14px;
+      line-height: 24px;
+      color: #333;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const map = L.map('map').setView([-26.4564, -48.6086], 16);
+
+  // Camada base
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap | Karaguá',
+    maxZoom: 18,
+  }).addTo(map);
+
+  // --- Carregar arquivo GeoJSON externo ---
+  fetch('map.geojson')
+    .then(response => response.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: {
+          color: "#197278",
+          weight: 2,
+          fillColor: "#68b0ab",
+          fillOpacity: 0.4
+        }
+      }).addTo(map);
+    })
+    .catch(error => console.error("Erro ao carregar GeoJSON:", error));
+
+  // Dados embutidos diretamente
+
+  const monitoramentoIcon = L.icon({
+    iconUrl: './images/icon/Monitoramento.png',
+    iconSize:     [32, 32],
+    iconAnchor:   [16, 32],
+    popupAnchor:  [0, -32]
+  });
+
+  const floraIcon = L.icon({
+    iconUrl: './images/icon/Flora.png',
+    iconSize:     [26, 26],
+    iconAnchor:   [16, 32],
+    popupAnchor:  [0, -32]
+  });
+
+  const faunaIcon = L.icon({
+    iconUrl: './images/icon/Fauna.png',
+    iconSize:     [26, 26],
+    iconAnchor:   [16, 32],
+    popupAnchor:  [0, -32]
+  });
+
+  const pontosMonitoramento = [
+    {
+      nome: "Ilha do Linguado",
+      latitude: -26.3831,
+      longitude: -48.6331,
+      dados: "Monitoramento - UC Linguado II"
+    },
+    {
+      nome: "Ponto Central",
+      latitude: -26.4564,
+      longitude: -48.6117,
+      dados: "Canal Principal - Centro"
+    },
+    {
+      nome: "Ponto Inicial",
+      latitude: -26.4547,
+      longitude: -48.6039,
+      dados: "Início da Boca da Barra - Centro"
+    }
+  ];
+
+  // Exibe os marcadores no mapa
+  pontosMonitoramento.forEach(p => {
+    L.marker([p.latitude, p.longitude], {icon: monitoramentoIcon,})
+      .addTo(map)
+      .bindPopup(`<b>${p.nome}</b><br>${p.dados}`);
+  });
+
+  const pontosFlora = [
+    {
+      nome: "Alta Concentração de Manguezais",
+      latitude:  -26.4072,
+      longitude: -48.6217,
+      dados: "Monitoramento da Flora - Ilha da Passagem"
+    },
+    {
+      nome: "Maior Concentração de Resíduos",
+      latitude:  -26.4575,
+      longitude: -48.6092,
+      dados: "Monitoramento da Flora - Região que está mais ao centro da cidade, tendo ali uma maior movimentação de embarcações e pessoas por conta do Posto de Gasolina e a Peixaria da Barra."
+    },
+    {
+      nome: "Grande Concentração de Famílias ao lado da APP - 1°",
+      latitude:  -26.4578,
+      longitude: -48.6153,
+      dados: "Monitoramento da Área - Procurar famílias dessa região para o projeto. Nesse ponto encontramos uma quantidade significativa de Floresta Remascente."
+    },
+    {
+      nome: "Grande Concentração de Famílias ao lado da APP - 2°",
+      latitude:  -26.4539,
+      longitude: -48.6231,
+      dados: "Monitoramento da Área - Procurar famílias dessa região para o projeto. Nesse ponto encontramos uma quantidade significativa de Floresta Remascente."
+    },
+    {
+      nome: "Grande Concentração de Famílias ao lado da APP - 3°",
+      latitude:  -26.4217,
+      longitude: -48.6319,
+      dados: "Monitoramento da Área - Procurar famílias dessa região para o projeto. Nesse ponto encontramos uma quantidade significativa de Floresta Remascente."
+    },
+  ];
+
+  // Exibe os marcadores no mapa
+  pontosFlora.forEach(p => {
+    L.marker([p.latitude, p.longitude], {icon: floraIcon,})
+      .addTo(map)
+      .bindPopup(`<b>${p.nome}</b><br>${p.dados}`);
+  });
+
+  const pontosFauna = [
+    {
+      nome: "Berçario de Peixes",
+      latitude: -26.4525,
+      longitude: -48.6067,
+      dados: "Monitoramento - Lâmina da Água que contém uma enorme quantidade de peixes em fase de crescimento como as Tanhotas e os Robalos"
+    },
+    {
+      nome: "Berçario dos Aratus",
+      latitude: -26.3717,
+      longitude: -48.6422,
+      dados: "Monitoramento - A Ilha do Linguado nessa região recebe marés altas e baixas todos os dias proporcionando uma área exelente para a vida dos Aratus."
+    },
+  ];
+
+  // Exibe os marcadores no mapa
+  pontosFauna.forEach(p => {
+    L.marker([p.latitude, p.longitude], {icon: faunaIcon,})
+      .addTo(map)
+      .bindPopup(`<b>${p.nome}</b><br>${p.dados}`);
+  });
+
+  const legenda = L.control({ position: 'bottomright' });
+
+  legenda.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML = `
+      <img src="./images/icon/Monitoramento.png" width="20" style="vertical-align:middle; margin-right:6px;"> Áreas de Monitoramento<br>
+      <img src="./images/icon/Flora.png" width="20" style="vertical-align:middle; margin-right:6px;"> Comunidade/APP<br>
+      <img src="./images/icon/Fauna.png" width="20" style="vertical-align:middle; margin-right:6px;"> Berçarios da Fauna Local<br>
+    `;
+    return div;
+  };
+
+  legenda.addTo(map);
+</script>
+
+</body>
+</html>
