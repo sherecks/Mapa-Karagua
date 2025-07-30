@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Karaguá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Rubik", sans-serif;
+            color: #000000;
+            background-color: #000000;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .site-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            border-bottom: 2px solid #000000;
+        }
+
+        .header-img,
+        img {
+            width: 42%;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+
+        .header-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .header-btn,
+        h3 {
+            font-family: "Rubik", sans-serif;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        /* Espaço para o header */
+        #main {
+            margin-top: 64px;
+        }
+
+        /* Seções */
+        section {
+            padding: 60px 24px;
+        }
+
+        #inicio {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #92DAFF;
+            gap: 24px;
+
+        }
+
+        #inicio h1 {
+            font-size: 4.8rem;
+            color: #000000;
+        }
+
+        #inicio p {
+            font-family: "IBM Plex Mono", monospace;
+            font-weight: 400;
+            font-size: 22px;
+            text-align: left;
+            max-width: 600px;
+        }
+
+        #eventos,
+        #sobre {
+            background: #ffffff;
+            margin-top: 12px;
+        }
+
+        #contato {
+            background: #92DAFF;
+            margin-top: 12px;
+        }
+
+        #sobre h2 {
+            font-size: 2.5rem;
+            text-align: left;
+        }
+
+        #sobre p {
+            text-align: left;
+            font-family: "IBM Plex Mono", monospace;
+            font-weight: 400;
+            font-size: 22px;
+        }
+
+        #inicio .intro-text {
+            flex: 1 1 400px;
+        }
+
+        #inicio .intro-image {
+            flex: 0 0 58%;
+        }
+
+        #inicio .intro-image .frame {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            background: #ffffff;
+            border-top: 2px solid #000000;
+            font-size: 0.9rem;
+        }
+
+        /* 1. Ícone e overlay inicialmente escondidos em desktop */
+        .menu-toggle,
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 999px) {
+            .header-nav {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                color: #000000;
+                cursor: pointer;
+            }
+
+            .header-img,
+            img {
+                margin-top: 4px;
+                width: 62%;
+            }
+
+            #inicio .intro-image .frame {
+                width: 100%;
+                max-width: none;
+                height: auto;
+                margin-top: 16px;
+            }
+
+            #inicio .intro-image {
+                display: none !important;
+            }
+
+        }
+
+        /* 3. Overlay full-screen */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 4. Quando aberto */
+        .mobile-menu.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 5. Botão fechar */
+        .menu-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 6. Links do menu mobile */
+        .mobile-nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 16px 0;
+        }
+
+        .mobile-nav h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header compartilhado -->
+    <header class="site-header">
+        <div class="header-img"><img src="./images/KARAGUÁ.png" alt=""></div>
+
+        <!-- Ícone de menu para mobile -->
+        <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menu">☰</button>
+
+        <nav class="header-nav">
+            <a href="#inicio" class="header-btn">
+                <h3>Início</h3>
+            </a>
+            <a href="map.html" class="header-btn">
+                <h3>Mapa</h3>
+            </a>
+            <a href="#sobre" class="header-btn">
+                <h3>Sobre Nós</h3>
+            </a>
+            <a href="#contato" class="header-btn">
+                <h3>Contato</h3>
+            </a>
+        </nav>
+
+        <!-- Overlay full-screen -->
+        <div id="mobile-menu" class="mobile-menu">
+            <button id="menu-close" class="menu-close" aria-label="Fechar menu">×</button>
+            <nav class="mobile-nav">
+                <a href="#inicio">
+                    <h3>Início</h3>
+                </a>
+                <a href="map.html">
+                    <h3>Mapa</h3>
+                </a>
+                <a href="#sobre">
+                    <h3>Sobre Nós</h3>
+                </a>
+                <a href="#contato">
+                    <h3>Contato</h3>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main id="main">
+        <!-- Seção Inicial -->
+        <section id="inicio">
+            <div class="intro-text">
+                <h1>Projeto Karaguá Vivo</h1>
+                <p>
+                    O Karaguá Vivo é um projeto de PSA focado na proteção,
+                    monitoramento e restauração dos manguezais de Balneário Barra do Sul.
+                </p>
+            </div>
+            <div class="intro-image">
+                <img class="frame" src="./images/Frame 1.png" alt="">
+            </div>
+        </section>
+
+        <!-- Seção Sobre -->
+        <section id="sobre">
+            <h2>Conservar, Restaurar e Monitorar</h2>
+            <p>
+                A Karaguá é uma Ecotech dedicada ao desenvolvimento de projetos ambientais voltados à conservação de
+                ecossistemas costeiros, com foco na geração de créditos de carbono e na valorização das comunidades
+                locais e
+                indígenas.
+            </p>
+            <br />
+            <p>
+                •Inteligência Artificial aplicada à conservação
+                <br />
+                •Mapas interativos e customizáveis para cada território
+                <br />
+                •Processamento de dados ambientais automatizados com IA
+                <br />
+                •Tecnologia a serviço de soluções ambientais
+            </p>
+        </section>
+
+        <!-- Seção Contato -->
+        <section id="contato">
+            <h2>Contato</h2>
+            <form>
+                <input type="text" placeholder="Seu nome" style="padding:8px; width:100%; margin-bottom:8px;">
+                <input type="email" placeholder="Seu email" style="padding:8px; width:100%; margin-bottom:8px;">
+                <textarea placeholder="Sua mensagem" style="padding:8px; width:100%; height:100px;"></textarea>
+                <button type="submit"
+                    style="margin-top:8px; padding:10px 20px; background:#000000; color:#fff; border:none; border-radius:2px;">Enviar</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer simples -->
+    <footer>
+        © 2025 Projeto Karaguá Vivo • Karaguá
+    </footer>
+
+    <script>
+        const toggleBtn = document.getElementById('menu-toggle');
+        const closeBtn = document.getElementById('menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        toggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+        closeBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+        // Fecha também ao clicar em qualquer link
+        document.querySelectorAll('.mobile-nav a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+    </script>
+
+</body>
+
+</html>
